@@ -1,0 +1,13 @@
+{
+    "port":5000,
+    "webhook":{
+        "enabled":false,
+        "path":"/"
+    },
+    "mysql": {
+        "host": "localhost",
+        "user": "root",
+        "password": "",
+        "database": "wa_notification"
+    }
+}
