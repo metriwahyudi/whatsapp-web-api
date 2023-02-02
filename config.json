@@ -1,5 +1,8 @@
 {
     "port":5000,
+    "websocket": {
+        "port": 5001
+    },
     "webhook":{
         "enabled":false,
         "path":"/"
@@ -8,6 +11,6 @@
         "host": "localhost",
         "user": "root",
         "password": "",
-        "database": "wa_notification"
+        "database": "whatsapp_api"
     }
 }

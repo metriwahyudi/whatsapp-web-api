@@ -7,6 +7,7 @@ const config = require("./config.json");
 
 const { Client, LocalAuth } = require("whatsapp-web.js");
 
+
 process.title = "whatsapp-node-api";
 global.client = new Client({
   authStrategy: new LocalAuth(),
@@ -26,13 +27,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 client.on("qr", (qr) => {
   console.log("qr");
+  io.emit('qr',qr);
   fs.writeFileSync("./components/last.qr", qr);
 });
 
 client.on("authenticated", () => {
   console.log("AUTH!");
   authed = true;
-
+  io.emit('log','Authenticated');
   try {
     fs.unlinkSync("./components/last.qr");
   } catch (err) {}
@@ -44,6 +46,7 @@ client.on("auth_failure", () => {
 });
 
 client.on("ready", () => {
+  io.emit('log','Client Ready');
   console.log("Client is ready!");
 });
 
@@ -58,6 +61,7 @@ client.on("message", async (msg) => {
 });
 client.on("disconnected", () => {
   authed = false;
+  io.emit('log','Disconnected');
   console.log("disconnected");
   client.initialize();
 });
@@ -81,6 +85,7 @@ app.listen(port, () => {
   console.log("Server Running Live on Port : " + port);
 });
 
+require('./socket');
 require("./components/queue");
 
 
