@@ -10,8 +10,8 @@ const { Client, LocalAuth } = require("whatsapp-web.js");
 
 process.title = "whatsapp-node-api";
 global.client = new Client({
-  authStrategy: new LocalAuth(),
-  puppeteer: { headless: true },
+    authStrategy: new LocalAuth(),
+    puppeteer: { headless: true },
 });
 
 global.authed = false;
@@ -26,66 +26,63 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 client.on("qr", (qr) => {
-  console.log("qr");
-  io.emit('qr',qr);
-  fs.writeFileSync("./components/last.qr", qr);
+    console.log("qr");
+    io.emit('qr',qr);
+    fs.writeFileSync("./components/last.qr", qr);
 });
 
 client.on("authenticated", () => {
-  console.log("AUTH!");
-  authed = true;
-  io.emit('log','Authenticated');
-  try {
-    fs.unlinkSync("./components/last.qr");
-  } catch (err) {}
+    console.log("AUTH!");
+    authed = true;
+    io.emit('log','Authenticated');
+    try {
+        fs.unlinkSync("./components/last.qr");
+    } catch (err) {}
 });
 
 client.on("auth_failure", () => {
-  console.log("AUTH Failed !");
-  process.exit();
+    console.log("AUTH Failed !");
+    process.exit();
 });
 
 client.on("ready", () => {
-  io.emit('log','Client Ready');
-  console.log("Client is ready!");
+    io.emit('log','Client Ready');
+    console.log("Client is ready!");
 });
 
 client.on("message", async (msg) => {
-  if (config.webhook.enabled) {
-    if (msg.hasMedia) {
-      const attachmentData = await msg.downloadMedia();
-      msg.attachmentData = attachmentData;
+    if (config.webhook.enabled) {
+        if (msg.hasMedia) {
+            const attachmentData = await msg.downloadMedia();
+            msg.attachmentData = attachmentData;
+        }
+        axios.post(config.webhook.path, { msg });
     }
-    axios.post(config.webhook.path, { msg });
-  }
 });
 client.on("disconnected", () => {
-  authed = false;
-  io.emit('log','Disconnected');
-  console.log("disconnected");
-  client.initialize();
+    authed = false;
+    io.emit('log','Disconnected');
+    console.log("disconnected");
+    client.initialize();
 });
 client.initialize();
 
-const chatRoute = require("./components/chatting");
+//const chatRoute = require("./components/chatting");
 //const groupRoute = require("./components/group");
 const authRoute = require("./components/auth");
 const contactRoute = require("./components/contact");
 
 app.use(function (req, res, next) {
-  console.log(req.method + " : " + req.path);
-  next();
+    console.log(req.method + " : " + req.path);
+    next();
 });
-app.use("/chat", chatRoute);
+//app.use("/chat", chatRoute);
 //app.use("/group", groupRoute);
 app.use("/auth", authRoute);
 app.use("/contact", contactRoute);
 
 app.listen(port, () => {
-  console.log("Server Running Live on Port : " + port);
+    console.log("Server Running Live on Port : " + port);
 });
 
-require('./socket');
-require("./components/queue");
-
-
+require('./ai2');
